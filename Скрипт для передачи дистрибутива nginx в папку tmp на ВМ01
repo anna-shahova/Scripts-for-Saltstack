@@ -1,0 +1,26 @@
+1.	Создать файл nginx.tar.gz на машине, с которой будет выполняться передача, и поместить его в директорию /srv/salt на этой машине.
+2.	Создать файл с именем nginx.sls в директории /srv/salt на машине, с которой будет выполняться передача, со следующим содержимым:
+nginx_dist:
+file.managed:
+-	 name: /tmp/nginx.tar.gz
+-  source: salt://nginx.tar.gz
+3. Создать файл с именем vm01.sls в директории /srv/salt на машине, с которой будет выполняться передача, со следующим содержимым:
+include:
+- nginx
+
+vm01:
+file.managed:
+-	name: /tmp/nginx.tar.gz
+-	source: salt://nginx.tar.gz
+-	makedirs: True
+-	backup: False
+-	user: root
+-	group: root
+-	mode: 0644
+-	saltenv: base
+-	require_in:
+- nginx_dist
+4. Отправить файл nginx.sls средствами Saltstack на ВМ01.
+На ВМ01 выполнить команду:
+salt-call state.sls vm01
+После выполнения команды на ВМ01 в директории /tmp появится файл nginx.tar.gz.
