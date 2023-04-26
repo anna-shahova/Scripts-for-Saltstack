@@ -1,0 +1,26 @@
+# Файл vm01-nginx.sls
+# Настройки для ВМ01
+target_vm01:
+  nodename: vm01
+  tgt: {{ nodename }}.example.com
+  user: root
+  passwd: Sup3rS3cr3tP@ssw0rd
+
+# Настройки для установки nginx
+nginx_install:
+  package_name: nginx
+  package_source: /tmp
+  package_file: nginx.deb     # Предполагается, что nginx уже скачан в /tmp
+
+# Установка nginx на ВМ01
+install_nginx:
+  pkg.installed:
+    - name: {{ nginx_install.package_name }}
+    - source: {{ nginx_install.package_source }}
+    - file: {{ nginx_install.package_file }}
+    - tgt: {{ target_vm01.tgt }}
+    - user: {{ target_vm01.user }}
+    - password: {{ target_vm01.passwd }}
+После сохранения этого скрипта в SLS-файл, его можно выполнить на ВМ01 с помощью команды:
+sudo salt-call state.apply vm01-nginx
+Скрипт выше предполагает, что nginx установлен из .deb-файла, который уже находится в папке /tmp на ВМ01. Если nginx нужно скачать с удаленного репозитория, то можно использовать формат source: deb http://nginx.org/packages/mainline/debian/ stretch nginx.
