@@ -1,0 +1,17 @@
+Для выполнения данной задачи, необходимо настроить формулу для Nginx, которая будет менять содержимое файла index.html. Для этого необходимо выполнить следующие шаги:
+Создать файл формулы mynginx/files/index.html с необходимым содержимым "Hello Greenatom".
+Создать файл mynginx/_states/index.py средствами Saltstack. В этом файле будет описываться состояние замены файла index.html нашим текстом. Пример состояния можно увидеть ниже:
+{% set index_path = '/usr/share/nginx/html/index.html' %}
+{% set homepage = 'salt://mynginx/files/index.html' %}
+
+{% if salt.file.file_exists(index_path) %}
+nginx_homepage:
+  file.managed:
+    - name: {{ index_path }}
+    - source: {{ homepage }}
+    - replace: True
+{% endif %}
+
+Запустить настройку формулы через Saltstack. Для этого необходимо выполнить команду salt '<имя_сервера>' state.sls mynginx (где '<имя_сервера>' - имя вашего сервера).
+Результатом выполнения команды должно быть изменение файла index.html на сервере Nginx.
+В данном случае, текст "Hello Greenatom" будет представлять собой единственную содержательную строку в файле index.html, который в будущем будет выводиться в браузере при запросе данного сервера.
